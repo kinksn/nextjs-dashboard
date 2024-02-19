@@ -12,7 +12,7 @@ const FormSchema = z.object({
   }),
   amount: z.coerce
     .number()
-    .gt(0, {message: 'Please enter an amount greater than $0.'}),
+    .gt(0, { message: 'Please enter an amount greater than $0.' }),
   status: z.enum(['pending', 'paid'], {
     invalid_type_error: 'Please select an invoice status',
   }),
@@ -31,17 +31,15 @@ export type State = {
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 
-export async function createInvoice(prevState: State, formData: FormData) {
+export async function createInvoice(_prevState: State, formData: FormData) {
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
     status: formData.get('status'),
   });
 
-  console.log(validatedFields);
-
   // If form validation fails, return errors early. Otherwise, continue.
-  if(!validatedFields.success) {
+  if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',
@@ -49,7 +47,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   }
 
   // Prepare data for insertion into the database
-  const {amount, customerId, status} = validatedFields.data;
+  const { amount, customerId, status } = validatedFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
 
@@ -59,7 +57,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
-  } catch(e) {
+  } catch (e) {
     // if a database error occurs. return a more specific error.
     return {
       message: 'Database Error: Failed to Create Invoice.'
