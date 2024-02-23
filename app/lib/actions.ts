@@ -4,6 +4,29 @@ import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { signIn } from "@/auth";
+import { AuthError } from 'next-auth';
+
+export async function authenticate(
+  _prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    console.log("error = ", error);
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.'
+        default:
+          return 'Something went wrong.';
+      }
+    }
+    // ここのthrow errorを消すとログイン後dashboardにリダイレクトしなくなる
+    throw error;
+  }
+}
 
 const FormSchema = z.object({
   id: z.string(),

@@ -5,6 +5,8 @@ const {
   revenue,
   users,
 } = require('../app/lib/placeholder-data.js');
+
+// パスワードをハッシュ化するためのパッケージ
 const bcrypt = require('bcrypt');
 
 async function seedUsers(client) {
