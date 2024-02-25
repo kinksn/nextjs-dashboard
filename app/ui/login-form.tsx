@@ -12,6 +12,8 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { authenticate } from '@/app/lib/actions';
 
 export default function LoginForm() {
+  // useFormStateの代二引数はerrorMessageの初期値
+  // useFormStateの代二引数はerrorMessage初期値は初期状態では表示したくないので undefinedを設定している
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
 
   return (

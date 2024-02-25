@@ -4,18 +4,38 @@ import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+// providerオプションにCreadentials（ユーザー名とパスワードでログインできるようにする機能）が搭載されている
+// auth.tsのNextAuth.tsから返却されるsignIn関数をインポート
 import { signIn } from "@/auth";
 import { AuthError } from 'next-auth';
+
 
 export async function authenticate(
   _prevState: string | undefined,
   formData: FormData,
 ) {
   try {
+    /**
+    * 正常系のデータ入力時
+    *
+    formData =  _FormData [FormData] {
+      [Symbol(state)]: [
+        { name: '$ACTION_REF_1', value: '' },
+        {
+          name: '$ACTION_1:0',
+          value: '{"id":"b8b7f347c09d3281ec22ecd55a4e93d7376db5ac","bound":"$@1"}'
+        },
+        { name: '$ACTION_1:1', value: '["$undefined"]' },
+        { name: '$ACTION_KEY', value: 'k4156757892' },
+        { name: 'email', value: 'user@nextmail.com' },
+        { name: 'password', value: '123456' }
+      ]
+    }
+    */
     await signIn('credentials', formData);
   } catch (error) {
-    console.log("error = ", error);
     if (error instanceof AuthError) {
+      console.log("error.type = ", error.type);
       switch (error.type) {
         case 'CredentialsSignin':
           return 'Invalid credentials.'
